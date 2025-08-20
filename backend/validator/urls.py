@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import ParityCheckView
+from .views import ValidatePlaca
 
 urlpatterns = [
-    path('parity/', ParityCheckView.as_view(), name='parity-check'),
+    path('validator-placa/', ValidatePlaca.as_view(), name='validator-placa-particular'),
 ]
