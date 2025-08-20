@@ -1,4 +1,11 @@
-# .gitignore
+# Ignora todo por defecto
+/*
+
+# ¡Pero no ignores estas carpetas!
+!/Vuejs/
+!/backend/
+
+# Opcional: sigue ignorando archivos/carpetas no deseados dentro de Vuejs y backend
 venv/
 venvproject/
 node_modules/
