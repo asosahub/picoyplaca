@@ -1,5 +1,5 @@
 import re
-from datetime import date, timedelta
+from datetime import date, timedelta, time, datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -43,6 +43,12 @@ def getHolidays(year: int):
 def par_impar(num : int) -> str:
     return [1, 2, 3, 4, 5] if num % 2 == 0 else [6, 7, 8, 9, 0]
 
+def checkHours() -> bool:
+    current_time = datetime.now().time()
+    start_time = time(6, 0)  # 6:00 AM
+    end_time = time(21, 0)   # 9:00 PM
+    return start_time <= current_time <= end_time
+
 class ValidatePlaca(APIView):
 
     def get(self, request):
@@ -66,6 +72,9 @@ class ValidatePlaca(APIView):
         today = date.today()
         is_holiday = today in holidays
 
+        # Verificar si estamos en horario de pico y placa
+        in_pico_hours = checkHours()
+
         # Último dígito de la placa
         last_digit = int(placa[-1]) if format_valid else None
 
@@ -79,15 +88,18 @@ class ValidatePlaca(APIView):
 
         # Estado de circulación
         st = None
-        if last_digit is not None:
-            if last_digit in par_impar(today.day):
-                st = False
-            else:
-                st = True
+        if not is_holiday and in_pico_hours:
+            if last_digit is not None:
+                if last_digit in par_impar(today.day):
+                    st = False
+                else:
+                    st = True
 
         return Response({
             "formato valido": format_valid,
             "es festivo": is_holiday,
+            "en_horario_pico": in_pico_hours,
+            "es_fin_de_semana": today.weekday() >= 5,
             "mensaje": msng,
             "hoy": today.isoformat(),
             "placa": placa,
