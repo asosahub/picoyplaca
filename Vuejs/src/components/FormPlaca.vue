@@ -6,15 +6,15 @@
         <input
           type="text"
           class="form-control"
-          id="placa"
+          id="license_plate"
           placeholder="ABC123"
-          v-model="placa"
+          v-model="license_plate"
           maxlength="6"
           autocomplete="off"
           :disabled="loading"
           required
         >
-        <label for="placa">Ingrese la placa de su vehiculo</label>
+        <label for="license_plate">Ingrese la placa de su vehiculo</label>
       </div>
       <button class="btn btn-success w-100" type="submit" :disabled="loading">
         {{ loading ? 'Verificando...' : 'Verificar' }}
@@ -32,10 +32,10 @@
           </div>
           <div class="modal-body">
             <!-- Si hay error o el formato inválido -->
-            <div v-if="error || (result && !result['formato valido'])" class="text-center">
+            <div v-if="error || (result && !result['valid_format'])" class="text-center">
               <i class="fas fa-exclamation-triangle text-danger fa-3x mb-3"></i>
               <p class="text-danger"><strong>{{ getErrorMessage() }}</strong></p>
-              <div v-if="result && !result['formato valido']" class="mt-3 p-3 bg-light rounded">
+              <div v-if="result && !result['valid_format']" class="mt-3 p-3 bg-light rounded">
                 <small class="text-muted">
                   <strong>Formato correcto:</strong> 3 letras seguidas de 3 números<br>
                   <strong>Ejemplo:</strong> ABC123, XYZ789
@@ -44,39 +44,39 @@
             </div>
 
             <!-- Si hay resultado exitoso con formato válido -->
-            <div v-else-if="result && result['formato valido']" class="text-center">
+            <div v-else-if="result && result['valid_format']" class="text-center">
               <!-- Icono según el estado -->
-              <i v-if="result['estado circulación: ']" class="fas fa-check-circle text-success fa-3x mb-3"></i>
+              <i v-if="result['circulation_status']" class="fas fa-check-circle text-success fa-3x mb-3"></i>
               <i v-else class="fas fa-times-circle text-danger fa-3x mb-3"></i>
 
               <!-- Información de la consulta -->
               <div class="info-section mb-3">
                 <p><strong>Fecha de hoy:</strong> {{ today }}</p>
-                <p><strong>Placa:</strong> {{ result.placa }}</p>
-                <p><strong>Último dígito:</strong> {{ result['ultimo digito'] }}</p>
+                <p><strong>Placa:</strong> {{ result.license_plate }}</p>
+                <p><strong>Último dígito:</strong> {{ result['last_digit'] }}</p>
               </div>
 
               <!-- Estado de circulación -->
-              <div class="estado-section p-3 rounded" :class="result['estado circulación: '] ? 'bg-light-success' : 'bg-light-danger'">
-                <h6 class="mb-2" :class="result['estado circulación: '] ? 'text-success' : 'text-danger'">
+              <div class="estado-section p-3 rounded" :class="result['circulation_status'] ? 'bg-light-success' : 'bg-light-danger'">
+                <h6 class="mb-2" :class="result['circulation_status'] ? 'text-success' : 'text-danger'">
                   <strong>Estado de Circulación</strong>
                 </h6>
-                <p class="mb-0" :class="result['estado circulación: '] ? 'text-success' : 'text-danger'">
+                <p class="mb-0" :class="result['circulation_status'] ? 'text-success' : 'text-danger'">
                   <strong>
-                    {{ result['estado circulación: '] ? 'PUEDE CIRCULAR' : 'TIENE PICO Y PLACA' }}
+                    {{ result['circulation_status'] ? 'PUEDE CIRCULAR' : 'TIENE PICO Y PLACA' }}
                   </strong>
                 </p>
-                <small class="text-muted">{{ result.mensaje }}</small>
+                <small class="text-muted">{{ result.message }}</small>
               </div>
 
               <div class="mt-3">
-                <div v-if="result['es festivo']" class="p-2 bg-warning bg-opacity-25 rounded mb-2">
+                <div v-if="result['holiday']" class="p-2 bg-warning bg-opacity-25 rounded mb-2">
                   <small class="text-warning"><strong> Hoy es día festivo</strong></small>
                 </div>
-                <div v-if="!result['en_horario_pico']" class="p-2 bg-info bg-opacity-25 rounded mb-2">
+                <div v-if="!result['rush_hour']" class="p-2 bg-info bg-opacity-25 rounded mb-2">
                   <small class="text-info"><strong>Fuera del horario de pico y placa (6am - 9pm)</strong></small>
                 </div>
-                <div v-if="result['es_fin_de_semana']" class="p-2 bg-secondary bg-opacity-25 rounded">
+                <div v-if="result['weekend']" class="p-2 bg-secondary bg-opacity-25 rounded">
                   <small class="text-secondary"><strong>Es fin de semana - No aplica pico y placa</strong></small>
                 </div>
               </div>
@@ -99,7 +99,7 @@ export default {
   name: "FormPlaca",
   data() {
     return {
-      placa: "",
+      license_plate: "",
       showModal: false,
       loading: false,
       result: null,
@@ -122,7 +122,7 @@ export default {
     },
 
     async sendForm() {
-      if (!this.placa.trim()) {
+      if (!this.license_plate.trim()) {
         this.error = 'Por favor ingrese una placa válida';
         this.result = null;
         this.closeModal = true;
@@ -136,7 +136,7 @@ export default {
       try {
         const response = await axios.get('http://localhost:8000/api/validator-placa/', {
           params: {
-            placa: this.placa.trim()
+            license_plate: this.license_plate.trim()
           }
         });
         
@@ -161,14 +161,14 @@ export default {
     },
 
     getHeaderClass() {
-      if (this.error || (this.result && !this.result['formato valido'])) {
+      if (this.error || (this.result && !this.result['valid_format'])) {
         return 'bg-danger text-white';
       }
-      return this.result && this.result['estado circulación: '] ? 'bg-success text-white' : 'bg-danger text-white';
+      return this.result && this.result['circulation_status'] ? 'bg-success text-white' : 'bg-danger text-white';
     },
 
     getTitleText() {
-      if (this.error || (this.result && !this.result['formato valido'])) {
+      if (this.error || (this.result && !this.result['valid_format'])) {
         return 'Formato Inválido';
       }
       return 'Resultado de Verificación';
@@ -178,8 +178,8 @@ export default {
       if (this.error) {
         return this.error;
       }
-      if (this.result && !this.result['formato valido']) {
-        return this.result.mensaje;
+      if (this.result && !this.result['valid_format']) {
+        return this.result.message;
       }
       return 'Error desconocido';
     },
@@ -190,7 +190,7 @@ export default {
 
     newConsult() {
       this.showModal = false;
-      this.placa = "";
+      this.license_plate = "";
       this.result = null;
       this.error = null;
     }

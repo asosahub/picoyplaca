@@ -69,7 +69,7 @@ class CirculationRestrictionView(APIView):
 
     @staticmethod
     def get(request):
-        license_plate = request.query_params.get('placa', '').replace(' ', '').upper()
+        license_plate = request.query_params.get('license_plate', '').replace(' ', '').upper()
         year_param = request.query_params.get('year')
 
         # Validar formato de placa
@@ -121,5 +121,5 @@ class CirculationRestrictionView(APIView):
             "today": today.isoformat(),
             "license_plate": license_plate,
             "last_digit": last_digit,
-            "circulation_status:": st,
+            "circulation_status": st,
         }, status=status.HTTP_200_OK)
