@@ -80,11 +80,11 @@ class ValidatePlaca(APIView):
 
         # Mensaje según resultado
         if not format_valid:
-            msng = "Formato inválido para carro particular"
+            msng = "Invalid format for private car"
         elif is_holiday:
-            msng = "La placa es válida y HOY es festivo"
+            msng = "The license plate is valid and TODAY is a holiday"
         else:
-            msng = "La placa es válida y hoy NO es festivo"
+            msng = "The license plate is valid and today is NOT a holiday."
 
         # Estado de circulación
         st = None
