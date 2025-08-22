@@ -96,13 +96,13 @@ class ValidatePlaca(APIView):
                     st = True
 
         return Response({
-            "formato valido": format_valid,
-            "es festivo": is_holiday,
-            "en_horario_pico": in_pico_hours,
-            "es_fin_de_semana": today.weekday() >= 5,
-            "mensaje": msng,
-            "hoy": today.isoformat(),
+            "valid format": format_valid,
+            "holiday": is_holiday,
+            "rush hour": in_pico_hours,
+            "weekend": today.weekday() >= 5,
+            "message": msng,
+            "today": today.isoformat(),
             "placa": placa,
-            "ultimo digito": last_digit,
-            "estado circulación: ": st,
+            "last digit": last_digit,
+            "circulacion status:": st,
         }, status=status.HTTP_200_OK)
