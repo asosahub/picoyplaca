@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import ValidatePlaca
+from .views import CirculationRestrictionView
 
 urlpatterns = [
-    path('validator-placa/', ValidatePlaca.as_view(), name='validator-placa-particular'),
+    path('validator-placa/', CirculationRestrictionView.as_view(), name='validator-placa-particular'),
 ]
